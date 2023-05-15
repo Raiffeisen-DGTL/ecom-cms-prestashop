@@ -1,6 +1,5 @@
 <?php
 
-
 require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'load.php';
 
 /**
@@ -115,7 +114,8 @@ class raifpayvalidationModuleFrontController extends ModuleFrontController
             'successUrl' => $successurl,
             'comment' => 'Оплата заказа '.$orderId,
             'paymentDetails' => 'Оплата заказа '.$orderId,
-            'failUrl' => $failUrl
+            'failUrl' => $failUrl,
+            'publicId' => Configuration::get('RAIF_PAY_PUBID'),
         //    'paymentMethod' => "both"
         ];
 
@@ -144,7 +144,7 @@ class raifpayvalidationModuleFrontController extends ModuleFrontController
 
             echo Tools::jsonEncode([
                 'type' => 'popup',
-                'pubid' => Configuration::get('RAIF_PAY_PUBID'),
+                'publicId' => Configuration::get('RAIF_PAY_PUBID'),
                 'data' => $query
             ]);
             die();
@@ -154,9 +154,15 @@ class raifpayvalidationModuleFrontController extends ModuleFrontController
         /** @var \Raiffeisen\Ecom\Client $client */
         $link = $ecomClient->getPayUrl($total, $orderId, $query);
 
+        $query['orderId'] = $orderId;
+        $query['amount'] = $total;
+
+
         echo Tools::jsonEncode([
             'type' => 'redirect',
-            'link' => $link
+          // 'link' => $link
+            'publicId' => Configuration::get('RAIF_PAY_PUBID'),
+            'data' => $query
         ]);
         die();
 
