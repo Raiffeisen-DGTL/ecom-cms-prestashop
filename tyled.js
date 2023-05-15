@@ -29,19 +29,23 @@ function sd() {
         },
         success:function (result) {
             console.log(result);
+
+            const paymentPage = new PaymentPageSdk(result.publicId, {
+                url: 'https://pay-test.raif.ru/pay'
+            });
+
             if(result.type == 'redirect') {
-                window.location.href = result.link;
+                paymentPage.openWindow(result.data)
+                    .then(function() {
+                        // console.log("Спасибо");
+                    })
+                    .catch(function() {
+                        window.location.href = baseUrl;
+                    });
                 return;
             }
 
             if(result.type == 'popup') {
-                const paymentPage = new PaymentPageSdk(result.pubid, {
-                    url: 'https://pay-test.raif.ru/pay'
-                });
-
-
-                result.data
-
                 paymentPage.openPopup(result.data)
                     .then(function() {
                         // console.log("Спасибо");
@@ -49,6 +53,7 @@ function sd() {
                     .catch(function() {
                         window.location.href = baseUrl;
                     });
+                return;
             }
 
         },

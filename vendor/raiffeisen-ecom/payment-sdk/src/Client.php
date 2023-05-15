@@ -457,11 +457,13 @@ class Client
      *
      * @throws ClientException Throw on API return invalid response.
      */
-    public function postOrderRefund($orderId, $refundId, $amount, $baseUrl=self::PAYMENTS_API_URI)
+    public function postOrderRefund($orderId, $refundId, $amount, $paymentDetails = [], $baseUrl=self::PAYMENTS_API_URI)
     {
         $url = $baseUrl.'/orders/'.$orderId.'/refunds/'.$refundId;
-
-        return $this->requestBuilder($url, self::POST, [ 'amount' => $amount ]);
+        if(!empty($paymentDetails))
+            return $this->requestBuilder($url, self::POST, [ 'amount' => $amount , 'paymentDetails' => $paymentDetails['paymentDetails'], 'receipt' => $paymentDetails['receipt']]);
+        else
+            return $this->requestBuilder($url, self::POST, [ 'amount' => $amount ]);
 
     }//end postOrderRefund()
 

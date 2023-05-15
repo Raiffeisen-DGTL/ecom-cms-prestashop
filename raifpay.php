@@ -28,7 +28,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-
+use OrderDetail;
 
 // Autoload for standalone composer build.
 if (!class_exists('Curl\Curl')) {
@@ -72,46 +72,83 @@ class raifpay extends PaymentModule
         if (!count(Currency::checkPaymentCurrencies($this->id))) {
             $this->warning = $this->l('No currency has been set for this module.');
         }
-
-
-        
-
         if(empty(Configuration::get('RAIF_STATUS_WAITING'))) {
             $orderWaiting = $this->createOrderStatus('Райффайзенбанк - ожидание оплаты', '#0042FF');
             $orderPaid = $this->createOrderStatus('Райффайзенбанк - оплачено', '#00ff05');
+            $orderPartialRefunded = $this->createOrderStatus('Райффайзенбанк - частичный возврат', '#ff4f00');
             $orderFullRefunded = $this->createOrderStatus('Райффайзенбанк - возврат', '#ff0000');
             Configuration::updateValue('RAIF_PAY_NAME', '');
             Configuration::updateValue('RAIF_STATUS_WAITING', $orderWaiting->id);
+            Configuration::updateValue('RAIF_STATUS_PART_REFUNDED', $orderPartialRefunded->id);
             Configuration::updateValue('RAIF_STATUS_PAID', $orderPaid->id);
             Configuration::updateValue('RAIF_STATUS_FULL_REFUNDED', $orderFullRefunded->id);
         }
-
-
 
         $this->registerHook('actionProductCancel');
         $this->registerHook('actionOrderStatusPostUpdate');
     }
 
     public function hookActionProductCancel($params) {
-        
+        //file_put_contents('/home/admin/web/prest.vk-smart.info/public_html/modules/raifpay/1', json_encode($params));
+        $publicId = Configuration::get('RAIF_PAY_PUBID');
+        $secretKey = Configuration::get('RAIF_PAY_SECKEY');
+        $api_url = 'https://pay.raif.ru';
+        if(Configuration::get('RAIF_PAY_TESTPAY_1') && Configuration::get('RAIF_PAY_TESTPAY_1') == 'on') {
+            $api_url = 'https://pay-test.raif.ru';
+        }
         $ecomClient = new \Raiffeisen\Ecom\Client($secretKey, $publicId, $api_url);
         $action = $params['action'];
         $sumReturned = $params['cancel_amount'];
         $retQuantity = $params['cancel_quantity'];
-        $order_id = $params['id_cart'];
-        $query['receipt'] = [
-                'amountr' => $sumReturned,
-                'paymentDetails'=> 'Возврат денежных средств'
-            ];
-        $ecomClient->postOrderRefund($order_id, $order_id, $sumReturned);
-
+        $order_id = $params['order']->id;
+        $customer       = new Customer ($params['order']->id_customer);
+        $email         = $customer->email;
+        $nds = Configuration::get('RAIF_PAY_NDS');
+        //file_put_contents('/var/www/prestashop/public/modules/raifpay/1', print_r($params,1).'00000132'.PHP_EOL,FILE_APPEND);
+        $amount = 0;
+        $itemss = [];
+        $items = new stdClass();
+        foreach(OrderDetail::getList((int)$order_id) as $val) {
+            if($params['id_order_detail'] == $val['id_order_detail']) {
+                $id_detail = $val['id_order_detail'];
+                $quantity = $params['cancel_quantity'];
+                $price = number_format($val['total_price_tax_incl'], 2, '.', "");
+                $name = $val['product_name'];
+                $amount = $params['cancel_amount'];
+                if($amount != $val['product_price'] * $quantity) $price = $amount / $quantity;
+                $items->name = $name;
+                $items->price = (float)number_format($price, 2, '.', "");
+                $items->quantity = (float)$quantity;
+                $items->amount = (float)number_format($amount, 2, '.', "");
+                $items->vatType = $nds;
+                $itemss[] = $items;
+            }  
+        }
+        $items = (object)$items;
+        if(Configuration::get('RAIF_PAY_FISCHECK_1') && Configuration::get('RAIF_PAY_FISCHECK_1') == 'on') {
+            $query['paymentDetails'] = (string)"Возврат по заказу ".$order_id;
+            $customer = new stdClass();
+            $customer->email = $email;
+            $receipt = new stdClass();
+            $receipt->items = $itemss;
+            $receipt->customer = $customer;
+            $query['receipt'] = $receipt;
+            file_put_contents('/var/www/prestashop/public/modules/raifpay/1', print_r($query,1).PHP_EOL,FILE_APPEND);
+        }
+        $responce = $ecomClient->postOrderRefund($order_id, $order_id, (float)number_format($amount, 2, '.', ""), $query);
+        //file_put_contents('/home/admin/web/prest.vk-smart.info/public_html/modules/raifpay/1', print_r($responce,1))
+        file_put_contents('/var/www/prestashop/public/modules/raifpay/1', print_r($responce,1).PHP_EOL,FILE_APPEND);
+        if($responce['code'] == 'SUCCESS') {
+            $order = new Order($order_id);
+            $order->setCurrentState((int)Configuration::get('RAIF_STATUS_PART_REFUNDED'));
+       }
     }
     /**
      *  array(
-        'newOrderStatus' => (object) OrderState,
-        'oldOrderStatus' => (object) OrderState,
-        'id_order' => (int) Order ID
-        );
+      *  'newOrderStatus' => (object) OrderState,
+     *   'oldOrderStatus' => (object) OrderState,
+      *  'id_order' => (int) Order ID
+      *  );
      *
      */
     //actionOrderStatusUpdate
@@ -136,11 +173,6 @@ class raifpay extends PaymentModule
 
             $orderId = $params['id_order']; //Ok Id de la commande démarrée
             $order = new Order($orderId);
-
-            /** @var \Raiffeisen\Ecom\Client $client */
-
-
-
             $customer       = new Customer ($order->id_customer);
             $cart           = new Cart ($order->id_cart);
             $email         = $customer->email;
@@ -189,21 +221,14 @@ class raifpay extends PaymentModule
 
             $response = $ecomClient->postOrderRefundCheck($orderId, $orderId, $query);
            // PrestaShopLogger::addLog('Return order #'.$orderId.' -- '.$response);
-
-
-
         }
-
-
-
-
     }
 
     public function createOrderStatus($name, $color)
     {
 
         $order = new OrderState();
-        $order->name = array_fill(0, 10, $name);;
+        $order->name = array_fill(0, 10, $name);
         $order->send_email = 0;
         $order->invoice = 0;
         $order->module_name = 'raifpay';
