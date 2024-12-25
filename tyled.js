@@ -1,69 +1,35 @@
-const baseUrl = 'https://' + window.location.hostname;
-let sum = $('#order_all_sum_raifpay').attr('value').slice(0, -2);
-let token = $('#order_token').attr('value');
-//console.log(sum,token);
-let secret = '';
+$(document).ready(function() {
+    const form = $('#payment-form-raifpay');
 
+    function send() {
+        const baseUrl = '//' + window.location.hostname;
+        const url = baseUrl + '/module/raifpay/validation';
+        $.ajax({
+            type: 'POST',
+            cache: false,
+            dataType: 'json',
+            url,
+            data: {
+                action: 'postProcess',
+            },
+            success: function (result) {
+                debugger;
+                const paymentPage = new PaymentPageSdk(result.publicId, {
+                    url: form.data('modal'),
+                });
+                if (result.type == 'redirect') {
+                    paymentPage.replace(result.data);
+                } else if (result.type == 'popup') {
+                    paymentPage.openPopup(result.data).catch(function() {
+                        window.location.href = baseUrl;
+                    });
+                }
+            },
+        });
+    }
 
-$('#payment-form-raifpay').submit(function (e) {
-    e.preventDefault();
-    sd();
-})
-
-$( document ).ready(function() {
-    $('#payment-form-raifpay').submit(function (e) {
+    form.submit(function (e) {
         e.preventDefault();
-        sd();
-    })
-});
-
-function sd() {
-    let url = baseUrl + '/module/raifpay/validation';
-    $.ajax({
-        type: 'POST',
-        cache: false,
-        dataType: 'json',
-        url: url,
-        data: {
-            action: 'postProcess'
-        },
-        success:function (result) {
-            console.log(result);
-
-            const paymentPage = new PaymentPageSdk(result.publicId, {
-                url: 'https://pay-test.raif.ru/pay'
-            });
-
-            if(result.type == 'redirect') {
-                paymentPage.openWindow(result.data)
-                    .then(function() {
-                        // console.log("Спасибо");
-                    })
-                    .catch(function() {
-                        window.location.href = baseUrl;
-                    });
-                return;
-            }
-
-            if(result.type == 'popup') {
-                paymentPage.openPopup(result.data)
-                    .then(function() {
-                        // console.log("Спасибо");
-                    })
-                    .catch(function() {
-                        window.location.href = baseUrl;
-                    });
-                return;
-            }
-
-        },
-        error:function (result){
-            console.log(result);
-        }
+        send();
     });
-
-
-    return;
-
-
-}
+});

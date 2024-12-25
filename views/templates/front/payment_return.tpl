@@ -1,6 +1,5 @@
 {extends "$layout"}
-
-{block name="content"}
+{block name='content'}
   <section>
     <p>{l s='You have successfully submitted your payment form.'}</p>
     <p>{l s='Here are the params:'}</p>
