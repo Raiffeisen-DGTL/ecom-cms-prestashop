@@ -2,6 +2,13 @@ stages:
   - verify
   - deploy
 
+include:
+  - project: 'acquiring/devops/pipelines'
+    ref: master
+    file: '.appscreener.yml'
+
+image: artifactory.raiffeisen.ru/ecom-image-docker/cli-tools:$CLI_TOOLS_TAG
+
 variables:
   APP_NAME: ecom-cms-prestashop
 
