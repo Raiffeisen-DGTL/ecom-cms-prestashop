@@ -2,18 +2,9 @@ stages:
   - verify
   - deploy
 
-include:
-  - project: 'acquiring/devops/pipelines'
-    ref: master
-    file: '.checkmarx-java.yml'
-
 variables:
   APP_NAME: ecom-sdk-php
   VERSION: 1.1.$CI_PIPELINE_IID
-
-checkmarx:
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
 push:
   stage: deploy
