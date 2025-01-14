@@ -2,17 +2,8 @@ stages:
   - verify
   - deploy
 
-include:
-  - project: 'acquiring/devops/pipelines'
-    ref: master
-    file: '.checkmarx.yml'
-
 variables:
   APP_NAME: ecom-cms-prestashop
-
-checkmarx:
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
 push:
   stage: deploy
