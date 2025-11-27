@@ -10,8 +10,8 @@
 
 namespace Raiffeisen\Ecom;
 
-//use Exception;
-//use DateTime;
+use Exception;
+use DateTime;
 
 if (false === defined('CLIENT_NAME')) {
     //phpcs:disable Squiz.Commenting -- Because contingent constant definition.
@@ -372,6 +372,42 @@ class Client
 
 
     /**
+     * Get JS for open payment form.
+     *
+     * @param numeric $amount  The order data.
+     * @param string  $orderId The order identifier.
+     * @param array   $query   The additional query params.
+     * @param string  $baseUrl The base payment form url.
+     *
+     * @return string The JS source.
+     */
+    public function getPayJS($amount, $orderId, array $query, $baseUrl=self::PAYMENT_FORM_URI)
+    {
+        $template = file_get_contents(__DIR__.DIRECTORY_SEPARATOR.'template.js');
+        $request  = json_encode(
+            [
+                'publicId' => $this->publicId,
+                'url'      => $this->host.$baseUrl,
+                'formData' => array_replace_recursive(
+                    [
+                        'amount'  => $amount,
+                        'orderId' => $orderId,
+                        'extra'   => [
+                            'apiClient'        => CLIENT_NAME,
+                            'apiClientVersion' => CLIENT_VERSION,
+                        ],
+                    ],
+                    $query
+                ),
+            ]
+        );
+
+        return strtr($template, ['$request' => $request]);
+
+    }//end getPayJS()
+
+
+    /**
      * Get pay URL witch success URL param.
      *
      * @param numeric $amount  The order data.
@@ -412,11 +448,15 @@ class Client
     public function postPayUrl($amount, $orderId, array $query, $baseUrl=self::PAYMENT_FORM_URI)
     {
         // Preset required fields.
-        $body = array_replace(
+        $body = array_replace_recursive(
             [
                 'publicId' => $this->publicId,
                 'amount'   => $amount,
                 'orderId'  => $orderId,
+                'extra'    => [
+                    'apiClient'        => CLIENT_NAME,
+                    'apiClientVersion' => CLIENT_VERSION,
+                ]
             ],
             $query
         );
@@ -457,34 +497,11 @@ class Client
      *
      * @throws ClientException Throw on API return invalid response.
      */
-    public function postOrderRefund($orderId, $refundId, $amount, $paymentDetails = [], $baseUrl=self::PAYMENTS_API_URI)
-    {
-        $url = $baseUrl.'/orders/'.$orderId.'/refunds/'.$refundId;
-        if(!empty($paymentDetails))
-            return $this->requestBuilder($url, self::POST, [ 'amount' => $amount , 'paymentDetails' => $paymentDetails['paymentDetails'], 'receipt' => $paymentDetails['receipt']]);
-        else
-            return $this->requestBuilder($url, self::POST, [ 'amount' => $amount ]);
-
-    }//end postOrderRefund()
-
-
-    /**
-     * Processing a refund.
-     *
-     * @param string $orderId  The order identifier.
-     * @param string $refundId The refund identifier.
-     * @param array $body   The refund amount.
-     * @param string $baseUrl  The base settings url.
-     *
-     * @return array Return result.
-     *
-     * @throws ClientException Throw on API return invalid response.
-     */
-    public function postOrderRefundCheck($orderId, $refundId, $body, $baseUrl=self::PAYMENTS_API_URI)
+    public function postOrderRefund($orderId, $refundId, $amount, $baseUrl=self::PAYMENTS_API_URI)
     {
         $url = $baseUrl.'/orders/'.$orderId.'/refunds/'.$refundId;
 
-        return $this->requestBuilder($url, self::POST, $body);
+        return $this->requestBuilder($url, self::POST, [ 'amount' => $amount ]);
 
     }//end postOrderRefund()
 

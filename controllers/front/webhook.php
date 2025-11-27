@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * @author    АО Райффайзенбанк <ecom@raiffeisen.ru>
+ * @copyright 2007 АО Райффайзенбанк
+ * @license   https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt The GNU General Public License version 2 (GPLv2)
+ */
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -19,7 +23,7 @@ class RaifpayWebhookModuleFrontController extends ModuleFrontController
         $ecomClient = new \Raiffeisen\Ecom\Client($secretKey, $publicId, $api_url);
 
         $signature = array_key_exists('HTTP_X_API_SIGNATURE_SHA256', $_SERVER)
-            ? Tools::stripslashes($_SERVER['HTTP_X_API_SIGNATURE_SHA256'])
+            ? stripslashes($_SERVER['HTTP_X_API_SIGNATURE_SHA256'])
             : '';
         $body = Tools::file_get_contents('php://input');
 
@@ -28,7 +32,6 @@ class RaifpayWebhookModuleFrontController extends ModuleFrontController
         try {
             $eventBody = json_decode($body, true);
 
-            /** @var \Raiffeisen\Ecom\Client $client */
             $checkEventSignature = $ecomClient->checkEventSignature($signature, $eventBody); // true or false
             if ($checkEventSignature) {
                 $amount = $eventBody['transaction']['amount'];

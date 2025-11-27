@@ -1,4 +1,12 @@
 <?php
+/**
+ * @author    АО Райффайзенбанк <ecom@raiffeisen.ru>
+ * @copyright 2007 АО Райффайзенбанк
+ * @license   https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt The GNU General Public License version 2 (GPLv2)
+ */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 global $_MODULE;
 $_MODULE = array();
@@ -42,3 +50,7 @@ $_MODULE['<{raifpay}prestashop>raifpay_4245499695408b974322be6f01b0d17a'] = 'Р�
 $_MODULE['<{raifpay}prestashop>raifpay_c9cc8cce247e49bae79f15173ce97354'] = 'Сохранить';
 $_MODULE['<{raifpay}prestashop>validation_656e26c7bd5146e12330c51ea4c64a7d'] = 'Оплата заказа: ';
 $_MODULE['<{raifpay}prestashop>validation_e2b7dec8fa4b498156dfee6e4c84b156'] = 'Этот способ оплаты недоступен.';
+
+$_MODULE['You have successfully submitted your payment form.'] = 'Вы успешно отправили вашу платёжную форму.';
+$_MODULE['Here are the params:'] = 'Параметры: ';
+$_MODULE['Now, you just need to proceed the payment and do what you need to do.'] = 'Теперь вам осталось обработать платеж и выполнить необходимые операции.';

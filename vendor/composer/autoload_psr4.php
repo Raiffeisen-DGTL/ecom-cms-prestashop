@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Raiffeisen\\Ecom\\' => array($vendorDir . '/raiffeisen-ecom/payment-sdk/src'),
+    'OviDigital\\JsObjectToJson\\' => array($vendorDir . '/ovidigital/js-object-to-json/src'),
 );

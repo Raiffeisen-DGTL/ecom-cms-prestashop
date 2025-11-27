@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * @author    АО Райффайзенбанк <ecom@raiffeisen.ru>
+ * @copyright 2007 АО Райффайзенбанк
+ * @license   https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt The GNU General Public License version 2 (GPLv2)
+ */
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -15,6 +19,8 @@ if (!class_exists('Raiffeisen\Ecom\Client')) {
 
 class Raifpay extends PaymentModule
 {
+    public $is_eu_compatible = 1;
+
     public function __construct()
     {
         $this->name = 'raifpay';
@@ -38,7 +44,7 @@ class Raifpay extends PaymentModule
             $this->warning = $this->l('No currency has been set for this module.');
         }
 
-        if (null == Configuration::get('RAIF_PAY_NAME')) {
+        if (null == Configuration::get('RAIF_PAY_NAME') || null == Configuration::get('RAIF_STATUS_WAITING')) {
             $orderWaiting = $this->createOrderStatus(
                 $this->l('Raiffeisenbank - waiting for payment'),
                 '#0042FF'
@@ -85,7 +91,7 @@ class Raifpay extends PaymentModule
         $responce = $ecomClient->postOrderRefund(
             $order_id,
             $order_id,
-            (float)number_format($amount, 2, '.', '')
+            number_format($amount, 2, '.', '')
         );
         if ('SUCCESS' == $responce['code']) {
             $order = new Order($order_id);
@@ -98,12 +104,12 @@ class Raifpay extends PaymentModule
     {
         $order = new OrderState();
         $order->name = array_fill(0, 10, $name);
-        $order->send_email = 0;
-        $order->invoice = 0;
+        $order->send_email = false;
+        $order->invoice = false;
         $order->module_name = 'raifpay';
         $order->color = $color;
         $order->unremovable = false;
-        $order->logable = 1;
+        $order->logable = true;
         $order->save();
 
         return $order;
@@ -111,7 +117,7 @@ class Raifpay extends PaymentModule
     public function install()
     {
         $this->registerHook('actionProductCancel');
-        if (!parent::install() || !$this->registerHook('paymentOptions') || !$this->registerHook('paymentReturn')) {
+        if (!parent::install() || !$this->registerHook('paymentOptions')) {
             return false;
         }
 
@@ -156,7 +162,7 @@ class Raifpay extends PaymentModule
         $offlineOption->setCallToActionText($this->l('Pay offline'))
                       ->setAction($this->context->link->getModuleLink($this->name, 'validation', array(), true))
                       ->setAdditionalInformation($this->context->smarty->fetch('module:raifpay/views/templates/front/payment_infos.tpl'))
-                      ->setLogo(Media::getMediaPath(_PS_MODULE_DIR_.$this->name.'/payment.jpg'));
+                      ->setLogo(Media::getMediaPath(_PS_MODULE_DIR_.$this->name.'/views/img/payment.jpg'));
 
         return $offlineOption;
     }
@@ -174,7 +180,7 @@ class Raifpay extends PaymentModule
                             ],
                         ])
                        ->setAdditionalInformation($this->context->smarty->fetch('module:raifpay/views/templates/front/payment_infos.tpl'))
-                       ->setLogo(Media::getMediaPath(_PS_MODULE_DIR_.$this->name.'/payment.jpg'));
+                       ->setLogo(Media::getMediaPath(_PS_MODULE_DIR_.$this->name.'/views/img/payment.jpg'));
 
         return $externalOption;
     }

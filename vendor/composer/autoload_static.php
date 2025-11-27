@@ -4,12 +4,16 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInita753b5d3d2c4923bc8fa24030003d716
+class ComposerStaticInit92136f90c7f98be61beee03f788fd64c
 {
     public static $prefixLengthsPsr4 = array (
         'R' => 
         array (
             'Raiffeisen\\Ecom\\' => 16,
+        ),
+        'O' => 
+        array (
+            'OviDigital\\JsObjectToJson\\' => 26,
         ),
     );
 
@@ -17,6 +21,10 @@ class ComposerStaticInita753b5d3d2c4923bc8fa24030003d716
         'Raiffeisen\\Ecom\\' => 
         array (
             0 => __DIR__ . '/..' . '/raiffeisen-ecom/payment-sdk/src',
+        ),
+        'OviDigital\\JsObjectToJson\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/ovidigital/js-object-to-json/src',
         ),
     );
 
@@ -27,9 +35,9 @@ class ComposerStaticInita753b5d3d2c4923bc8fa24030003d716
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInita753b5d3d2c4923bc8fa24030003d716::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInita753b5d3d2c4923bc8fa24030003d716::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInita753b5d3d2c4923bc8fa24030003d716::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit92136f90c7f98be61beee03f788fd64c::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit92136f90c7f98be61beee03f788fd64c::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit92136f90c7f98be61beee03f788fd64c::$classMap;
 
         }, null, ClassLoader::class);
     }

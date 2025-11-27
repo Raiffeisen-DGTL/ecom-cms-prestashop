@@ -15,7 +15,8 @@
     "ovidigital/js-object-to-json": "^1.1"
   },
   "config": {
-    "preferred-install": "dist"
+    "preferred-install": "dist",
+    "prepend-autoloader": false
   },
   "type": "prestashop-module"
 }
