@@ -4,20 +4,70 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "abbef1e02c741f49e96623e159f374ee",
+    "content-hash": "92136f90c7f98be61beee03f788fd64c",
     "packages": [
         {
-            "name": "raiffeisen-ecom/payment-sdk",
-            "version": "v1.1.43",
+            "name": "ovidigital/js-object-to-json",
+            "version": "1.1.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Raiffeisen-DGTL/ecom-sdk-php.git",
-                "reference": "5bf4539c05484c2fe29606ba6a8e36881a9e22ae"
+                "url": "https://github.com/ovidigital/js-object-to-json.git",
+                "reference": "192613f1c619635b37125c0382beb8bb14be14ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Raiffeisen-DGTL/ecom-sdk-php/zipball/5bf4539c05484c2fe29606ba6a8e36881a9e22ae",
-                "reference": "5bf4539c05484c2fe29606ba6a8e36881a9e22ae",
+                "url": "https://api.github.com/repos/ovidigital/js-object-to-json/zipball/192613f1c619635b37125c0382beb8bb14be14ac",
+                "reference": "192613f1c619635b37125c0382beb8bb14be14ac",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.0 || ^7.0 || ^8.0 || ^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "OviDigital\\JsObjectToJson\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ovi Indrei",
+                    "email": "ovidiu.indrei@gmail.com"
+                }
+            ],
+            "description": "PHP library to convert a JavaScript object string to JSON formatted string",
+            "homepage": "https://github.com/ovidigital/js-object-to-json",
+            "keywords": [
+                "JS",
+                "javascript",
+                "json",
+                "object"
+            ],
+            "support": {
+                "issues": "https://github.com/ovidigital/js-object-to-json/issues",
+                "source": "https://github.com/ovidigital/js-object-to-json"
+            },
+            "time": "2023-12-08T18:40:18+00:00"
+        },
+        {
+            "name": "raiffeisen-ecom/payment-sdk",
+            "version": "v1.1.55",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Raiffeisen-DGTL/ecom-sdk-php.git",
+                "reference": "37e5790f89d10decb038eb2fece11c71fd3577da"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Raiffeisen-DGTL/ecom-sdk-php/zipball/37e5790f89d10decb038eb2fece11c71fd3577da",
+                "reference": "37e5790f89d10decb038eb2fece11c71fd3577da",
                 "shasum": ""
             },
             "require": {
@@ -45,9 +95,9 @@
             "homepage": "https://github.com/Raiffeisen-DGTL/ecom-sdk-php",
             "support": {
                 "issues": "https://github.com/Raiffeisen-DGTL/ecom-sdk-php/issues",
-                "source": "https://github.com/Raiffeisen-DGTL/ecom-sdk-php/tree/v1.1.43"
+                "source": "https://github.com/Raiffeisen-DGTL/ecom-sdk-php/tree/v1.1.55"
             },
-            "time": "2022-12-07T09:14:00+00:00"
+            "time": "2023-03-23T06:50:24+00:00"
         }
     ],
     "packages-dev": [],
@@ -56,7 +106,9 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=5.6.0"
+    },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

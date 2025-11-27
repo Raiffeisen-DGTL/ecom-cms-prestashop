@@ -1,7 +1,19 @@
 <?php
+/**
+ * @author    АО Райффайзенбанк <ecom@raiffeisen.ru>
+ * @copyright 2007 АО Райффайзенбанк
+ * @license   https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt The GNU General Public License version 2 (GPLv2)
+ */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+// print(0);
 
 require_once dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'load.php';
 
+/**
+ * @property Raifpay $module
+ */
 class RaifpayvalidationModuleFrontController extends ModuleFrontController
 {
     public function postProcess()
@@ -14,6 +26,8 @@ class RaifpayvalidationModuleFrontController extends ModuleFrontController
                 break;
             }
         }
+
+        // print(1);
 
         if (!$authorized) {
             die($this->module->l('This payment method is not available.'));
@@ -29,13 +43,16 @@ class RaifpayvalidationModuleFrontController extends ModuleFrontController
         ) {
             Tools::redirect('index.php?controller=order&step=1');
         }
+        // print(2);
 
         $customer = new Customer((int) $cart->id_customer);
         $email = $customer->email;
+        // print(3);
 
         $currency = new Currency((int) $cart->id_currency);
         $total = (float) $cart->getOrderTotal(true, Cart::BOTH);
 
+        // print(4);
         $failUrl = 'https://' . Tools::getHttpHost(false) . '/order';
         $successUrl = $this->context->link->getPageLink(
             'order-confirmation',
@@ -47,10 +64,11 @@ class RaifpayvalidationModuleFrontController extends ModuleFrontController
                 'key' => $customer->secure_key,
             ]
         );
+        // print(5);
 
         $this->module->validateOrder(
             $cart->id,
-            Configuration::get('RAIF_STATUS_WAITING'),
+            (int)Configuration::get('RAIF_STATUS_WAITING'),
             $total,
             $this->module->displayName,
             NULL,
@@ -59,10 +77,9 @@ class RaifpayvalidationModuleFrontController extends ModuleFrontController
             false,
             $customer->secure_key
         );
+        // print(6);
 
-        $orderId = method_exists('Order', 'getOrderByCartId')
-            ? Order::getOrderByCartId($cart->id)
-            : Order::getIdByCartId($cart->id);
+        $orderId = Order::getIdByCartId($cart->id);
 
         $nds = Configuration::get('RAIF_PAY_NDS');
         $pr_items = [];
@@ -82,6 +99,7 @@ class RaifpayvalidationModuleFrontController extends ModuleFrontController
 
             $cost_pr = $cost_pr + $product['total_wt'];
         }
+        // print(7);
 
         $pr_items[] =   [
             'name' => 'Доставка',
@@ -97,6 +115,9 @@ class RaifpayvalidationModuleFrontController extends ModuleFrontController
             'paymentDetails' => $this->module->l('Payment for the order: ') . $orderId,
             'failUrl' => $failUrl,
             'publicId' => Configuration::get('RAIF_PAY_PUBID'),
+            'extra' => [
+                'apiClient' => 'Raifpay Prestashop'
+            ]
         ];
 
         if ('ONLY_SBP' == Configuration::get('RAIF_PAY_METHODS') || 'ONLY_ACQUIRING' == Configuration::get('RAIF_PAY_METHODS')) {
