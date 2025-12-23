@@ -329,6 +329,14 @@ class Raifpay extends PaymentModule
                                 'idevents' => 'VAT120',
                                 'name' => $this->l('VAT receipt at the estimated rate of 20/120'),
                             ],
+                            [
+                                'idevents' => 'VAT22',
+                                'name' => $this->l('VAT on the receipt at the rate of 22%'),
+                            ],
+                            [
+                                'idevents' => 'VAT122',
+                                'name' => $this->l('VAT receipt at the estimated rate of 22/122'),
+                            ],
                         ],
                         'id' => 'idevents',
                         'name' => 'name',
