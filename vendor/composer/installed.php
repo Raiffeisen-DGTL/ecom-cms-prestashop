@@ -1,0 +1,41 @@
+<?php return array(
+    'root' => array(
+        'name' => 'prestashop/paymentexample',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '7419280d6932549ea550edd59c80793ba9b1c09c',
+        'type' => 'prestashop-module',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => true,
+    ),
+    'versions' => array(
+        'ovidigital/js-object-to-json' => array(
+            'pretty_version' => '1.1.4',
+            'version' => '1.1.4.0',
+            'reference' => '192613f1c619635b37125c0382beb8bb14be14ac',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../ovidigital/js-object-to-json',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'prestashop/paymentexample' => array(
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '7419280d6932549ea550edd59c80793ba9b1c09c',
+            'type' => 'prestashop-module',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'raiffeisen-ecom/payment-sdk' => array(
+            'pretty_version' => 'v1.1.55',
+            'version' => '1.1.55.0',
+            'reference' => '37e5790f89d10decb038eb2fece11c71fd3577da',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../raiffeisen-ecom/payment-sdk',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+    ),
+);
